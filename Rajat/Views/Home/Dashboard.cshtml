@@ -1,0 +1,647 @@
+﻿@{
+    // Completely bypasses the default shared layout container to ensure pure edge-to-edge fullscreen execution
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en" class="m-0 p-0 w-full h-full overflow-hidden">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <title>Enterprise E-commerce Dashboard | Real-Time Telemetry Control Console</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+        theme: {
+        extend: {
+        "colors": {
+        "outline-variant": "rgba(255,255,255,0.4)",
+        "error": "#dc2626",
+        "surface": "rgba(255,255,255,0.25)",
+        "background": "transparent",
+        "primary": "var(--theme-primary)",
+        "secondary": "var(--theme-secondary)",
+        "on-surface": "var(--theme-text-main)",
+        "on-surface-variant": "var(--theme-text-sub)"
+        }
+        }
+        }
+        }
+    </script>
+
+    <style>
+        /* --- DYNAMIC TRANS-SYSTEM THEME TOKENS --- */
+        :root {
+        --theme-primary: #0058bc;
+        --theme-secondary: #0f172a;
+        --theme-text-main: #0f172a;
+        --theme-text-sub: #475569;
+        --theme-dna-a: #0058bc;
+        --theme-dna-b: #00bfdb;
+        --bg-gradient: linear-gradient(135deg, #c7d2fe 0%, #fbcfe8 35%, #fce7f3 65%, #dcfce7 100%);
+        }
+
+        body.theme-emerald {
+        --theme-primary: #059669;
+        --theme-secondary: #064e3b;
+        --theme-text-main: #064e3b;
+        --theme-text-sub: #374151;
+        --theme-dna-a: #059669;
+        --theme-dna-b: #10b981;
+        --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 35%, #86efac 70%, #dcfce7 100%);
+        }
+
+        body.theme-dark {
+        --theme-primary: #38bdf8;
+        --theme-secondary: #f8fafc;
+        --theme-text-main: #f8fafc;
+        --theme-text-sub: #cbd5e1;
+        --theme-dna-a: #38bdf8;
+        --theme-dna-b: #818cf8;
+        --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #2e1065 70%, #020617 100%);
+        }
+
+        body.theme-sunset {
+        --theme-primary: #ea580c;
+        --theme-secondary: #451a03;
+        --theme-text-main: #451a03;
+        --theme-text-sub: #4b5563;
+        --theme-dna-a: #ea580c;
+        --theme-dna-b: #f59e0b;
+        --bg-gradient: linear-gradient(135deg, #fff7ed 0%, #ffedd5 35%, #fed7aa 65%, #fef3c7 100%);
+        }
+
+        html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        transition: background 0.8s ease;
+        }
+
+        body {
+        background: var(--bg-gradient) !important;
+        background-attachment: fixed !important;
+        }
+
+        .fixed-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        }
+
+        .cyber-mesh {
+        background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        }
+
+        #floating-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: auto;
+        cursor: crosshair;
+        }
+
+        .glass-desktop-workspace {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(40px) saturate(230%);
+        -webkit-backdrop-filter: blur(40px) saturate(230%);
+        box-shadow: inset 0 1px 3px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        body.theme-dark .glass-desktop-workspace {
+        background: rgba(15, 23, 42, 0.45) !important;
+        }
+
+        .glass-card {
+        background: rgba(255, 255, 255, 0.45) !important;
+        backdrop-filter: blur(25px) saturate(190%) !important;
+        -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.65) !important;
+        box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.03), inset 0 1px 1px 0 rgba(255, 255, 255, 0.5) !important;
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        body.theme-dark .glass-card {
+        background: rgba(30, 41, 59, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+
+        .glass-card:hover {
+        background: rgba(255, 255, 255, 0.65) !important;
+        border-color: rgba(255, 255, 255, 0.9) !important;
+        transform: translateY(-2px);
+        }
+
+        .active-blue-link {
+        background: var(--theme-primary) !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+        }
+
+        .apple-glass-btn {
+        background: rgba(255, 255, 255, 0.25) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        transition: all 0.3s ease;
+        }
+
+        .animated-svg-path {
+        transition: d 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .live-bar {
+        transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .live-progress {
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.08);
+        border-radius: 9999px;
+        }
+
+        body.theme-dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body ng-app="dashboardApp" ng-controller="ConsoleController" class="m-0 p-0 w-full h-full overflow-hidden select-none">
+
+    <!-- CANVAS LAYERS -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute w-[450px] h-[450px] rounded-full bg-purple-400/25 blur-[100px] bottom-[-50px] left-[-50px] animate-pulse"></div>
+        <div class="absolute w-[400px] h-[400px] rounded-full bg-emerald-300/20 blur-[110px] top-[-50px] right-[-50px] animate-pulse"></div>
+        <canvas id="floating-canvas" class="w-full h-full"></canvas>
+    </div>
+
+    <!-- MASTER WORKSPACE ENVIRONMENT CONTAINER -->
+    <div class="glass-desktop-workspace flex items-stretch relative z-10 overflow-hidden">
+
+        <!-- SIDEBAR LEFT NAVIGATION PANEL -->
+        <aside class="hidden md:flex w-64 border-r border-slate-900/5 p-5 flex-col justify-between gap-6 shrink-0 z-20">
+            <div class="space-y-5">
+                <div class="flex items-center justify-between px-1">
+                    <div class="flex items-center gap-2.5">
+                        <span class="p-2 bg-blue-600 text-white rounded-xl shadow-md material-symbols-outlined text-sm font-bold">shopping_cart</span>
+                        <span class="font-black text-sm tracking-tight transition-colors" ng-style="{color: 'var(--theme-text-main)'}">E-commerce</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-0.5">
+                    <button ng-click="switchActiveView('overview')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all" ng-class="{'active-blue-link': activeView === 'overview', 'text-slate-600 hover:bg-black/5 dark:text-slate-400': activeView !== 'overview'}">
+                        <span class="material-symbols-outlined text-base">space_dashboard</span>Dashboard Home
+                    </button>
+                    <button ng-click="switchActiveView('orders')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all" ng-class="{'active-blue-link': activeView === 'orders', 'text-slate-600 hover:bg-black/5 dark:text-slate-400': activeView !== 'orders'}">
+                        <span class="material-symbols-outlined text-base">receipt_long</span>Neumorphic Orders
+                    </button>
+                    <button ng-click="switchActiveView('products')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all" ng-class="{'active-blue-link': activeView === 'products', 'text-slate-600 hover:bg-black/5 dark:text-slate-400': activeView !== 'products'}">
+                        <span class="material-symbols-outlined text-base">inventory_2</span>Obsidian Products
+                    </button>
+                    <button ng-click="switchActiveView('customers')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all" ng-class="{'active-blue-link': activeView === 'customers', 'text-slate-600 hover:bg-black/5 dark:text-slate-400': activeView !== 'customers'}">
+                        <span class="material-symbols-outlined text-base">group</span>Apple Frosted Users
+                    </button>
+                    <button ng-click="switchActiveView('finances')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all" ng-class="{'active-blue-link': activeView === 'finances', 'text-slate-600 hover:bg-black/5 dark:text-slate-400': activeView !== 'finances'}">
+                        <span class="material-symbols-outlined text-base">account_balance_wallet</span>Sunset Block Finances
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Sidebar Footer Configuration Base -->
+            <div class="space-y-3 pt-3 border-t border-slate-900/5 dark:border-white/5">
+                <div class="text-[9px] font-mono font-bold uppercase tracking-wider mb-1" ng-style="{color: 'var(--theme-text-sub)'}">// MUTATE COLOR MATRIX:</div>
+                <div class="grid grid-cols-4 gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-xl">
+                    <button ng-click="changeTheme('default')" class="w-full h-5 rounded bg-blue-600 border border-white/40 shadow-sm" title="Blue Helix"></button>
+                    <button ng-click="changeTheme('emerald')" class="w-full h-5 rounded bg-emerald-600 border border-white/40 shadow-sm" title="Emerald Gene"></button>
+                    <button ng-click="changeTheme('sunset')" class="w-full h-5 rounded bg-orange-600 border border-white/40 shadow-sm" title="Sunset Strand"></button>
+                    <button ng-click="changeTheme('dark')" class="w-full h-5 rounded bg-slate-500 border border-white/40 shadow-sm" title="Obsidian Dark"></button>
+                </div>
+                <div class="flex items-center gap-2.5 px-1">
+                    <div class="w-8 h-8 rounded-full border border-white flex items-center justify-center text-xs font-bold text-white bg-slate-800 shadow-sm">RS</div>
+                    <div class="truncate">
+                        <div class="text-xs font-bold transition-colors" ng-style="{color: 'var(--theme-text-main)'}">Rajat Soni</div>
+                        <div class="text-[9px] text-slate-500 font-mono">rajat.soni547@gmail.com</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- PANEL DASHBOARD MAIN CONTENT SCROLL GRID -->
+        <main class="flex-grow p-4 md:p-6 overflow-y-auto custom-scrollbar flex flex-col gap-6 z-20 h-full">
+
+            <!-- CONTROLS HEADER -->
+            <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-900/5 pb-4">
+                <div>
+                    <h2 class="text-lg font-bold tracking-tight transition-colors" ng-style="{color: 'var(--theme-text-main)'}">Hi, Jaleel</h2>
+                    <p class="text-xs text-slate-500">Welcome back to analytics console overview.</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="px-2 py-1 font-mono text-[9px] rounded bg-blue-500/10 text-blue-500 font-bold animate-pulse">● TELESCOPIC_CLUSTER_STREAM_ON</span>
+                </div>
+            </header>
+
+            <!-- LIVE LOGS ACTIVITY ROLLING TELEMETRY TICKER -->
+            <div class="flex items-center gap-2 bg-black/10 dark:bg-white/5 border border-white/20 rounded-xl px-4 py-2 font-mono text-[11px] shadow-inner" ng-style="{color: 'var(--theme-text-main)'}">
+                <span class="text-primary animate-pulse font-bold">● REPLICATION LOGS:</span>
+                <span id="system-live-log" class="truncate transition-all duration-300">Synchronizing concentric network channels...</span>
+            </div>
+
+            <!-- ====================================================================
+                 FIXED STABLE COMMUNICATION HUB CONTROLS CARD
+                 ==================================================================== -->
+            <section class="glass-card p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 border border-white/60 relative overflow-hidden shrink-0">
+                <div class="absolute top-1.5 right-4 font-mono text-[8px] opacity-40">// SYSTEM USER ACCOUNT REGISTRY LINK</div>
+
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 text-white flex items-center justify-center font-bold font-mono shadow-md text-base shrink-0">RS</div>
+                    <div class="truncate">
+                        <h4 class="text-xs font-bold tracking-tight" ng-style="{color: 'var(--theme-text-main)'}">Rajat Soni</h4>
+                        <p class="text-[11px] text-slate-500 font-mono">+91 9001415394</p>
+                        <p class="text-[10px] text-slate-400 font-mono truncate">rajat.soni547@gmail.com</p>
+                    </div>
+                </div>
+
+                <!-- Corrected Isolated Redirection Action Triggers -->
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <a href="https://api.whatsapp.com/send?phone=919001415394" target="_blank" class="apple-glass-btn px-3 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shadow-sm text-emerald-700 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all">
+                        <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i>
+                        Message on WhatsApp
+                    </a>
+                    <button ng-click="triggerNativeMailRedirect()" class="apple-glass-btn px-3 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shadow-sm text-blue-700 hover:bg-blue-500/10 hover:border-blue-400 transition-all">
+                        <span class="material-symbols-outlined text-sm text-blue-600">mail</span>
+                        Send Email
+                    </button>
+                </div>
+            </section>
+
+            <!-- VIEWPORT CHANNELS ROUTING SWITCH VIEW SYSTEM -->
+            <div ng-show="activeView === 'overview'" class="space-y-6 flex flex-col gap-6 animate-fadeIn">
+                <!-- TRIPLE SUMMARY CARD CONTAINER LAYER -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card p-5 rounded-2xl flex justify-between items-start relative overflow-hidden">
+                        <div class="space-y-1.5">
+                            <span class="text-xs font-semibold text-slate-500">Today's Profit</span>
+                            <h3 class="text-2xl font-black tracking-tight transition-colors" ng-style="{color: 'var(--theme-text-main)'}">$12,426</h3>
+                            <span class="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-0.5 w-max">▲ +12%</span>
+                        </div>
+                        <svg class="w-24 h-12 stroke-blue-600 fill-none opacity-40 self-end mb-1" viewBox="0 0 100 30" stroke-width="2"><path d="M0,25 Q15,10 30,22 T60,5 T90,15 T100,2" /></svg>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl flex justify-between items-start relative overflow-hidden">
+                        <div class="space-y-1.5">
+                            <span class="text-xs font-semibold text-slate-500">Total Sales</span>
+                            <h3 class="text-2xl font-black tracking-tight transition-colors" ng-style="{color: 'var(--theme-text-main)'}">$2,38,485</h3>
+                            <span class="text-[10px] text-rose-500 font-bold bg-rose-500/10 px-2 py-0.5 rounded flex items-center gap-0.5 w-max">▼ -4.5%</span>
+                        </div>
+                        <svg class="w-24 h-12 stroke-rose-500 fill-none opacity-40 self-end mb-1" viewBox="0 0 100 30" stroke-width="2"><path d="M0,8 Q20,28 40,12 T75,25 T100,5" /></svg>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl flex justify-between items-start relative overflow-hidden">
+                        <div class="space-y-1.5">
+                            <span class="text-xs font-semibold text-slate-500">Total Orders</span>
+                            <h3 class="text-2xl font-black tracking-tight transition-colors" ng-style="{color: 'var(--theme-text-main)'}">84,382</h3>
+                            <span class="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-0.5 w-max">▲ +1.8%</span>
+                        </div>
+                        <svg class="w-24 h-12 stroke-emerald-500 fill-none opacity-40 self-end mb-1" viewBox="0 0 100 30" stroke-width="2"><path d="M0,22 Q25,3 50,18 T100,10" /></svg>
+                    </div>
+                </section>
+
+                <!-- CHARTS ROW GROUP 01 -->
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="glass-card p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between gap-4 relative min-h-[260px]">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-bold font-mono" ng-style="{color: 'var(--theme-text-main)'}">// MASTER SPLINE TRANSACTION TREND LINES</h4>
+                        </div>
+                        <div class="h-44 w-full relative flex items-end">
+                            <div id="live-graph-dot" class="absolute w-2.5 h-2.5 bg-blue-600 rounded-full border-2 border-white shadow-md z-20 transition-all duration-[1.4s]" style="left: 0px; bottom: 0px;"></div>
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 600 140" preserveAspectRatio="none">
+                                <path d="M0,120 C100,90 200,110 300,60 C400,40 500,80 600,30" id="dynamic-trace-primary" class="animated-svg-path" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" />
+                                <path d="M0,130 C100,110 200,90 300,80 C400,60 500,70 600,45" id="dynamic-trace-secondary" class="animated-svg-path" fill="none" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="4,4" />
+                            </svg>
+                        </div>
+                        <div class="w-full flex justify-between font-mono text-[9px] text-slate-400 px-1 pt-1 border-t border-slate-900/5">
+                            <span>Jan</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Nov</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl lg:col-span-1 flex flex-col justify-between gap-4">
+                        <div class="flex justify-between items-center border-b border-black/5 pb-2">
+                            <h4 class="text-xs font-bold transition-colors" ng-class="isDarkMode ? 'text-white' : 'text-slate-800'">Traffic Sources</h4>
+                        </div>
+                        <div class="space-y-4 flex-grow justify-center flex flex-col">
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[11px] font-medium transition-colors" ng-class="isDarkMode ? 'text-slate-300' : 'text-slate-700'"><span>Direct Pipeline</span><span id="txt-prog-a" class="font-bold">70%</span></div>
+                                <div class="w-full bg-slate-900/5 h-1.5 rounded-full overflow-hidden"><div id="bar-prog-a" class="bg-blue-600 h-full live-progress w-[70%]"></div></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[11px] font-medium transition-colors" ng-class="isDarkMode ? 'text-slate-300' : 'text-slate-700'"><span>External Verification APIs</span><span id="txt-prog-b" class="font-bold">48%</span></div>
+                                <div class="w-full bg-slate-900/5 h-1.5 rounded-full overflow-hidden"><div id="bar-prog-b" class="bg-sky-400 h-full live-progress w-[48%]"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EXTRA CHARTS ROW GROUP 02 -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between gap-4">
+                        <div class="flex justify-between items-center border-b border-slate-900/5 pb-2">
+                            <h4 class="text-xs font-bold transition-colors" ng-class="isDarkMode ? 'text-white' : 'text-slate-800'">Subsystem Beta Ratios</h4>
+                        </div>
+                        <div class="flex justify-center py-2">
+                            <div id="live-radial-ring" class="w-24 h-28 rounded-full relative flex items-center justify-center border-[12px] border-blue-500/10 shadow-sm transition-transform duration-[1.5s]" style="border-left-color: #2563eb; border-top-color: #f59e0b; border-right-color: #ea580c;">
+                                <div class="text-center">
+                                    <span id="live-radial-txt" class="text-lg font-black transition-colors" ng-class="isDarkMode ? 'text-white' : 'text-slate-800'">70%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between gap-4">
+                        <h4 class="text-xs font-bold font-mono" ng-style="{color: 'var(--theme-text-main)'}">// HARDWARE LATENCY SPECTRUM</h4>
+                        <div class="h-28 flex items-end justify-between gap-2 pt-2">
+                            <div class="bg-blue-500 live-bar w-full rounded-t" style="height: 40%"></div>
+                            <div class="bg-blue-600 live-bar w-full rounded-t" style="height: 75%"></div>
+                            <div class="bg-cyan-400 live-bar w-full rounded-t" style="height: 55%"></div>
+                            <div class="bg-sky-500 live-bar w-full rounded-t" style="height: 90%"></div>
+                            <div class="bg-indigo-500 live-bar w-full rounded-t" style="height: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between gap-4">
+                        <h4 class="text-xs font-bold font-mono" ng-style="{color: 'var(--theme-text-main)'}">// AREA CONTEXT BUFFER ALLOCATION</h4>
+                        <div class="h-28 w-full relative">
+                            <svg class="w-full h-full" viewBox="0 0 200 100" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="var(--theme-primary)" stop-opacity="0.45" />
+                                        <stop offset="100%" stop-color="var(--theme-primary)" stop-opacity="0.0" />
+                                    </linearGradient>
+                                </defs>
+                                <path id="dynamic-area-fill" class="animated-svg-path" fill="url(#areaGrad)" stroke="var(--theme-primary)" stroke-width="2" d="M0,80 C50,40 100,70 150,30 C180,10 200,50 200,100 L0,100 Z" />
+                            </svg>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ADVANCED MONITORING PLOTS ROW GROUP 03 -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between gap-2">
+                        <h4 class="text-xs font-bold tracking-tight font-mono" ng-style="{color: 'var(--theme-text-main)'}">// ASYNC LOAD BALANCER POOLS</h4>
+                        <div class="h-24 flex items-end justify-around gap-1 pt-2">
+                            <div class="w-3 bg-primary/30 live-bar rounded-t border-t border-primary" style="height: 60%"></div>
+                            <div class="w-3 bg-sky-500/30 live-bar rounded-t border-t border-sky-400" style="height: 35%"></div>
+                            <div class="w-3 bg-primary/30 live-bar rounded-t border-t border-primary" style="height: 80%"></div>
+                            <div class="w-3 bg-sky-500/30 live-bar rounded-t border-t border-sky-400" style="height: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between gap-2">
+                        <h4 class="text-xs font-bold font-mono" ng-style="{color: 'var(--theme-text-main)'}">// CORE FREQUENCY SPECTRUM</h4>
+                        <div class="h-24 w-full pt-1">
+                            <svg class="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+                                <path id="dynamic-frequency-wave" class="animated-svg-path" fill="none" stroke="var(--theme-dna-b)" stroke-width="2.5" d="M0,50 Q30,20 60,70 T120,40 T300,50" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between gap-2">
+                        <h4 class="text-xs font-bold font-mono" ng-style="{color: 'var(--theme-text-main)'}">// VOLUMETRIC DATA THROUGHPUT RINGS</h4>
+                        <div class="flex justify-center items-center h-24 relative">
+                            <div id="live-gauge-outer" class="w-16 h-16 rounded-full border-[4px] border-dotted border-primary absolute transition-transform duration-[1.2s]"></div>
+                            <div id="live-gauge-inner" class="w-10 h-10 rounded-full border-[3px] border-dashed border-sky-400 absolute transition-transform duration-[1.6s]"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TELEMETRY COMPLIANCE LOGGER GRID SPREADSHEET -->
+                <section class="glass-card p-5 rounded-2xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-bold tracking-tight" ng-style="{color: 'var(--theme-text-main)'}">Active Processing Ingestion Rows</h4>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left font-mono text-[11px]" ng-style="{color: 'var(--theme-text-sub)'}">
+                            <thead>
+                                <tr class="text-slate-400 font-bold uppercase text-[9px] border-b border-black/5">
+                                    <th class="pb-2">Order Context ID</th>
+                                    <th class="pb-2">Customer Profile Name</th>
+                                    <th class="pb-2">Date Frame</th>
+                                    <th class="pb-2">Payload Value</th>
+                                    <th class="pb-2 text-right">Status Flag</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-black/5">
+                                <tr ng-repeat="row in tableData" class="hover:bg-white/20 transition-colors">
+                                    <td class="py-2.5 font-bold" ng-style="{color: 'var(--theme-text-main)'}">{{row.id}}</td>
+                                    <td class="font-sans font-bold" ng-style="{color: 'var(--theme-text-main)'}">{{row.name}}</td>
+                                    <td>{{row.date}}</td>
+                                    <td class="font-bold" ng-style="{color: 'var(--theme-text-main)'}">{{row.val}}</td>
+                                    <td class="text-right"><span class="bg-emerald-500/10 text-emerald-600 text-[9px] px-2 py-0.5 rounded font-bold">{{row.status}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- COMPONENT FORMS WORKSPACE LINK OPTIONS MAP -->
+            <div ng-show="activeView === 'orders'" class="glass-card p-6 rounded-3xl space-y-4 animate-fadeIn">
+                <h3 class="text-xs font-black font-mono border-b border-slate-900/5 pb-2" ng-style="{color: 'var(--theme-text-main)'}">[DESIGN_A] // NEUMORPHIC GRID CONTROLS</h3>
+                <form ng-submit="submitFormA()" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                    <input type="text" ng-model="formA.id" class="w-full bg-white/50 border-0 rounded-xl px-3 py-2 shadow-inner" placeholder="#ORD-99A" required />
+                    <input type="text" ng-model="formA.name" class="w-full bg-white/50 border-0 rounded-xl px-3 py-2 shadow-inner" placeholder="Ayan Ahmed" required />
+                    <input type="text" ng-model="formA.val" class="w-full bg-white/50 border-0 rounded-xl px-3 py-2 shadow-inner" placeholder="12500" required />
+                    <button type="submit" class="md:col-span-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-xl py-2 font-bold shadow-md">EXECUTE_NEUMORPHIC_INGESTION</button>
+                </form>
+            </div>
+
+            <div ng-show="activeView === 'products'" class="glass-card p-6 rounded-3xl space-y-4 bg-slate-950/80 text-slate-200 border-white/10 shadow-2xl animate-fadeIn">
+                <h3 class="text-xs font-bold font-mono text-cyan-400 border-b border-white/10 pb-2">// [DESIGN_B] OBSIDIAN CYBER REPLICATOR PLATFORM</h3>
+                <form ng-submit="submitFormB()" class="space-y-4 text-xs font-mono">
+                    <input type="text" ng-model="formB.id" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-cyan-300" placeholder="#PRD-88B" required />
+                    <input type="text" ng-model="formB.name" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-cyan-300" placeholder="Lokesh Kavadia" required />
+                    <input type="text" ng-model="formB.val" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-cyan-300" placeholder="1234" required />
+                    <button type="submit" class="w-full bg-cyan-500 text-slate-950 rounded-lg py-2 font-bold">COMMIT_MICRO_RECORD</button>
+                </form>
+            </div>
+
+            <div ng-show="activeView === 'customers'" class="glass-card p-6 rounded-3xl space-y-4 border-white/60 animate-fadeIn">
+                <h3 class="text-xs font-semibold tracking-tight text-slate-800 border-b border-white/40 pb-2"> [DESIGN_C] Cupertino Frosted Glass Alignment</h3>
+                <form ng-submit="submitFormC()" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <input type="text" ng-model="formC.id" placeholder="Index Trace" class="bg-white/30 border border-white/50 rounded-2xl px-4 py-2" required />
+                    <input type="text" ng-model="formC.name" placeholder="Nomenclature Title" class="bg-white/30 border border-white/50 rounded-2xl px-4 py-2" required />
+                    <input type="text" ng-model="formC.val" placeholder="Contribution Pool ($)" class="bg-white/30 border border-white/50 rounded-2xl px-4 py-2" required />
+                    <button type="submit" class="md:col-span-3 bg-white/60 border border-white font-bold rounded-2xl py-2.5 text-blue-600 shadow-sm">Compile Frosted Identity Block</button>
+                </form>
+            </div>
+
+            <div ng-show="activeView === 'finances'" class="glass-card p-6 rounded-3xl space-y-4 border-orange-300 shadow-lg animate-fadeIn">
+                <h3 class="text-xs font-black uppercase tracking-wider text-orange-700 border-b border-orange-200 pb-2">// [DESIGN_D] SUNSET RISK BALANCING CONSOLE</h3>
+                <form ng-submit="submitFormD()" class="space-y-4 text-xs font-mono">
+                    <input type="text" ng-model="formD.id" placeholder="LEDGER_NODE" class="w-full bg-white border-2 border-orange-400 rounded-xl px-3 py-1.5" required />
+                    <input type="text" ng-model="formD.name" placeholder="ACCOUNT_REF" class="w-full bg-white border-2 border-orange-400 rounded-xl px-3 py-1.5" required />
+                    <input type="range" min="100" max="15000" ng-model="formD.val" class="w-full accent-orange-600" />
+                    <button type="submit" class="w-full bg-orange-600 text-white font-extrabold rounded-xl py-2.5 tracking-widest">PIPELINE_sunset_MUTATION</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- REPLICATION CONTROLS RUNTIME ENGINE -->
+    <script>
+        var app = angular.module('dashboardApp', []);
+        app.controller('ConsoleController', ['$scope', '$window', function($scope, $window) {
+        $scope.isDarkMode = false;
+        $scope.activeView = 'overview';
+
+        $scope.tableData = [
+        { id: "#E00385", name: "Rayan Ahmed", date: "1 Jan 2026", val: "$12,500", status: "COMPLETED" },
+        { id: "#E00386", name: "Lokesh Kavadia", date: "2 Jan 2026", val: "$1,234", status: "SHIPPED" },
+        { id: "#E00387", name: "Mohit Kavadia", date: "4 Jan 2026", val: "$3,750", status: "COMPLETED" }
+        ];
+
+        $scope.formA = { id: '', name: '', val: '', status: 'COMPLETED' };
+        $scope.formB = { id: '', name: '', val: '', status: 'COMPLETED' };
+        $scope.formC = { id: '', name: '', val: '', status: 'COMPLETED' };
+        $scope.formD = { id: '', name: '', val: '7500', status: 'COMPLETED' };
+
+        // Secure Email Client Link Pipeline Dispatcher
+        $scope.triggerNativeMailRedirect = function() {
+        $window.location.href = "mailto:rajat.soni547@gmail.com";
+        };
+
+        function injectDynamicPayloadToGrid(formData) {
+        $scope.tableData.unshift({
+        id: formData.id, name: formData.name, date: "Live Session (MAPPED)",
+        val: isNaN(formData.val) ? formData.val : '$' + Number(formData.val).toLocaleString(),
+        status: formData.status || 'COMPLETED'
+        });
+        $scope.switchActiveView('overview');
+        }
+
+        $scope.submitFormA = function() { injectDynamicPayloadToGrid($scope.formA); $scope.formA = { id: '', name: '', val: '', status: 'COMPLETED' }; };
+        $scope.submitFormB = function() { injectDynamicPayloadToGrid($scope.formB); $scope.formB = { id: '', name: '', val: '', status: 'COMPLETED' }; };
+        $scope.submitFormC = function() { injectDynamicPayloadToGrid($scope.formC); $scope.formC = { id: '', name: '', val: '', status: 'COMPLETED' }; };
+        $scope.submitFormD = function() { injectDynamicPayloadToGrid($scope.formD); $scope.formD = { id: '', name: '', val: '7500', status: 'COMPLETED' }; };
+
+        $scope.switchActiveView = function(targetKey) {
+        $scope.activeView = targetKey;
+        var logEl = document.getElementById('system-live-log');
+        if(logEl) logEl.innerText = " Transferred system focus point route onto subview channel: " + targetKey.toUpperCase();
+        };
+
+        $scope.changeTheme = function(themeName) {
+        var body = document.body;
+        body.className = "m-0 p-0 w-full h-full overflow-hidden select-none";
+        if(themeName !== 'default') body.classList.add('theme-' + themeName);
+        $scope.isDarkMode = (themeName === 'dark');
+        var activeColorHex = getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim();
+        window.updateParticleColors(activeColorHex);
+        };
+        }]);
+
+        // Dynamic multi-charts calculations loop threads
+        (function() {
+        var primaryPath = document.getElementById('dynamic-trace-primary');
+        var secondaryPath = document.getElementById('dynamic-trace-secondary');
+        var areaFillPath = document.getElementById('dynamic-area-fill');
+        var frequencyWave = document.getElementById('dynamic-frequency-wave');
+        var tracerDot = document.getElementById('live-graph-dot');
+        var radialRing = document.getElementById('live-radial-ring');
+        var radialTxt = document.getElementById('live-radial-txt');
+        var gaugeOuter = document.getElementById('live-gauge-outer');
+        var gaugeInner = document.getElementById('live-gauge-inner');
+
+        var tick = 0; var xCoords = [20, 120, 220, 320, 420, 580]; var activeIndex = 0;
+
+        function runGlobalTelemetryTick() {
+        tick++;
+        var p1 = Math.floor(Math.sin(tick + 1) * 25) + 100; var p2 = Math.floor(Math.cos(tick + 2) * 20) + 65;
+        var p3 = Math.floor(Math.sin(tick + 3) * 25) + 80; var p4 = Math.floor(Math.cos(tick + 4) * 15) + 40;
+        var p5 = Math.floor(Math.sin(tick + 5) * 30) + 50; var p6 = Math.floor(Math.cos(tick + 6) * 10) + 20;
+        var s1 = p1 + 15; var s2 = p2 + 20; var s3 = p3 + 12;
+
+        if(primaryPath && secondaryPath) {
+        primaryPath.setAttribute('d', `M0,120 C${xCoords[0]},${p1} ${xCoords[1]},${p2} ${xCoords[2]},${p3} C${xCoords[3]},${p4} ${xCoords[4]},${p5} ${xCoords[5]},${p6}`);
+        secondaryPath.setAttribute('d', `M0,130 C${xCoords[0]},${s1} ${xCoords[1]},${s2} ${xCoords[2]},${s3} C${xCoords[3]},${p4+20} ${xCoords[4]},${p5+15} ${xCoords[5]},${p6+15}`);
+        }
+        if(tracerDot && primaryPath) {
+        var containerWidth = primaryPath.parentElement.clientWidth; var containerHeight = primaryPath.parentElement.clientHeight;
+        tracerDot.style.left = `${(xCoords[activeIndex] / 600) * containerWidth}px`;
+        tracerDot.style.top = `${containerHeight - ((p3 / 140) * containerHeight)}px`;
+        activeIndex = (activeIndex + 1) % xCoords.length;
+        }
+        var progA = Math.floor(Math.sin(tick) * 15) + 70; var progB = Math.floor(Math.cos(tick) * 12) + 48;
+        if(document.getElementById('bar-prog-a')) {
+        document.getElementById('bar-prog-a').style.width = progA + '%'; document.getElementById('txt-prog-a').innerText = progA + '%';
+        document.getElementById('bar-prog-b').style.width = progB + '%'; document.getElementById('txt-prog-b').innerText = progB + '%';
+        }
+        var degrees = (tick * 45) % 360; var dynamicRatio = Math.floor(Math.sin(tick) * 8) + 70;
+        if(radialRing) { radialRing.style.transform = `rotate(${degrees}deg)`; radialTxt.style.transform = `rotate(-${degrees}deg)`; radialTxt.innerText = dynamicRatio + '%'; }
+
+        document.querySelectorAll('.live-bar').forEach(function(b, idx) { b.style.height = (Math.floor(Math.sin(tick + idx) * 32) + 58) + '%'; });
+        if(areaFillPath) {
+        var a1 = Math.floor(Math.sin(tick) * 12) + 50; var a2 = Math.floor(Math.cos(tick + 1) * 18) + 60; var a3 = Math.floor(Math.sin(tick + 2) * 8) + 40;
+        areaFillPath.setAttribute('d', `M0,100 C40,${a1} 90,${a2} 140,${a3} C170,40 200,${a2-10} 200,100 Z`);
+        }
+        if(frequencyWave) {
+        var f1 = Math.floor(Math.sin(tick) * 25) + 50; var f2 = Math.floor(Math.cos(tick) * 25) + 50;
+        frequencyWave.setAttribute('d', `M0,50 Q40,${f1} 90,${f2} T170,${f1} T240,${f2} T300,50`);
+        }
+        if(gaugeOuter && gaugeInner) { gaugeOuter.style.transform = `rotate(${tick * 30}deg)`; gaugeInner.style.transform = `rotate(-${tick * 45}deg)`; }
+        }
+        setInterval(runGlobalTelemetryTick, 1800);
+        })();
+
+        // Ambient Drifting Vector Mesh Network Background Logic
+        (function() {
+        var canvas = document.getElementById('floating-canvas'); if(!canvas) return; var ctx = canvas.getContext('2d'); var pColor = '#0058bc';
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        window.updateParticleColors = function(newHex) { pColor = newHex; };
+
+        var nodes = ['⚡ C#', '.NET Core', '🛢️ SQL Server', '💻 VS', '📱 Flutter', '🌐 API']; var list = [];
+        for(var i=0; i<15; i++) {
+        list.push({
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height, text: nodes[i % nodes.length],
+        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, alpha: Math.random() * 0.15 + 0.08
+        });
+        }
+        function run() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "bold 11px 'JetBrains Mono', monospace";
+        list.forEach(function(p) {
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < -50) p.x = canvas.width + 50; if(p.x > canvas.width + 50) p.x = -50;
+        if(p.y < -50) p.y = canvas.height + 50; if(p.y > canvas.height + 50) p.y = -50;
+        ctx.fillStyle = pColor; ctx.globalAlpha = p.alpha; ctx.fillText(p.text, p.x, p.y);
+        });
+        requestAnimationFrame(run);
+        }
+        run();
+        })();
+    </script>
+</body>
+</html>

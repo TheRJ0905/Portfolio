@@ -1,0 +1,959 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Rajat Soni | Enterprise Full Stack Engineer & Software Architect</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+        theme: {
+        extend: {
+        "colors": {
+        "outline-variant": "rgba(255,255,255,0.4)",
+        "error": "#dc2626",
+        "surface": "rgba(255,255,255,0.25)",
+        "background": "transparent",
+        "primary": "var(--theme-primary)",
+        "secondary": "var(--theme-secondary)",
+        "on-surface": "var(--theme-text-main)",
+        "on-surface-variant": "var(--theme-text-sub)"
+        },
+        "borderRadius": {
+        "DEFAULT": "0.5rem",
+        "lg": "1rem",
+        "xl": "1.5rem",
+        "full": "9999px"
+        },
+        "spacing": {
+        "section-gap": "clamp(60px, 8vw, 100px)",
+        "gutter": "24px",
+        "container-max": "1280px"
+        }
+        }
+        }
+        }
+    </script>
+
+    <style>
+        /* --- DYNAMIC TRANS-SYSTEM THEME TOKENS --- */
+        :root {
+        --theme-primary: #0058bc;
+        --theme-secondary: #0f172a;
+        --theme-text-main: #0f172a;
+        --theme-text-sub: #475569;
+        --theme-dna-a: #0058bc;
+        --theme-dna-b: #00bfdb;
+        --bg-gradient: radial-gradient(circle at 50% 0%, #f8fafc 10%, #cbd5e1 60%, #94a3b8 100%);
+        }
+
+        body.theme-emerald {
+        --theme-primary: #059669;
+        --theme-secondary: #064e3b;
+        --theme-text-main: #064e3b;
+        --theme-text-sub: #374151;
+        --theme-dna-a: #059669;
+        --theme-dna-b: #10b981;
+        --bg-gradient: radial-gradient(circle at 50% 0%, #f0fdf4 10%, #bbf7d0 60%, #86efac 100%);
+        }
+
+        body.theme-dark {
+        --theme-primary: #38bdf8;
+        --theme-secondary: #f8fafc;
+        --theme-text-main: #f8fafc;
+        --theme-text-sub: #cbd5e1;
+        --theme-dna-a: #38bdf8;
+        --theme-dna-b: #818cf8;
+        --bg-gradient: radial-gradient(circle at 50% 0%, #1e293b 10%, #0f172a 60%, #020617 100%);
+        }
+
+        body.theme-sunset {
+        --theme-primary: #ea580c;
+        --theme-secondary: #451a03;
+        --theme-text-main: #451a03;
+        --theme-text-sub: #4b5563;
+        --theme-dna-a: #ea580c;
+        --theme-dna-b: #f59e0b;
+        --bg-gradient: radial-gradient(circle at 50% 0%, #fff7ed 10%, #ffedd5 60%, #fed7aa 100%);
+        }
+
+        html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        }
+
+        body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg-gradient);
+        background-attachment: fixed;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        transition: background 0.8s ease;
+        }
+
+        .fixed-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        }
+
+        .cyber-mesh {
+        background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        }
+
+        #floating-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: auto;
+        cursor: crosshair;
+        }
+
+        /* --- HIGH-VISIBILITY CHROMOSOMAL DOUBLE STRAND HELIX --- */
+        .dna-vertical-viewport {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: clamp(240px, 28vw, 340px);
+        height: 100vh;
+        transform: translateX(-50%);
+        perspective: 1600px;
+        opacity: 0.6;
+        transition: opacity 0.4s ease;
+        }
+
+        .dna-strand {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        will-change: transform;
+        }
+
+        .dna-node {
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        top: var(--node-y);
+        transform-style: preserve-3d;
+        transform: rotateY(var(--node-rotation));
+        }
+
+        .dna-node::before, .dna-node::after {
+        content: '';
+        position: absolute;
+        width: clamp(10px, 1.2vw, 15px);
+        height: clamp(10px, 1.2vw, 15px);
+        border-radius: 50%;
+        background: var(--theme-dna-a);
+        top: -5px;
+        box-shadow: 0 0 20px 5px var(--theme-dna-a);
+        transition: background 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        .dna-node::before {
+        left: 0;
+        }
+
+        .dna-node::after {
+        right: 0;
+        background: var(--theme-dna-b);
+        box-shadow: 0 0 20px 5px var(--theme-dna-b);
+        }
+
+        .dna-bar {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        top: 50%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--theme-dna-a) 0%, var(--theme-dna-b) 100%);
+        opacity: 0.5;
+        transform: translateY(-50%);
+        transition: background 0.6s ease;
+        }
+
+        /* --- SPEC-LEVEL APPLE GLASSMORPHISM FRAMEWORKS --- */
+        .apple-glass-card {
+        background: rgba(255, 255, 255, 0.22) !important;
+        backdrop-filter: blur(45px) saturate(230%) !important;
+        -webkit-backdrop-filter: blur(45px) saturate(230%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.75) !important;
+        box-shadow: 0 12px 40px 0 rgba(31, 41, 55, 0.04), inset 0 1px 2px 0 rgba(255, 255, 255, 0.5) !important;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .apple-dark-glass-card {
+        background: rgba(15, 23, 42, 0.3) !important;
+        backdrop-filter: blur(45px) saturate(200%) !important;
+        -webkit-backdrop-filter: blur(45px) saturate(200%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.18), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2) !important;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .apple-glass-btn {
+        background: rgba(255, 255, 255, 0.25) !important;
+        backdrop-filter: blur(25px) !important;
+        -webkit-backdrop-filter: blur(25px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.02) !important;
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        color: var(--theme-text-main) !important;
+        }
+
+        .apple-glass-btn:hover {
+        background: rgba(255, 255, 255, 0.55) !important;
+        border-color: rgba(255, 255, 255, 0.9) !important;
+        transform: translateY(-2px);
+        }
+
+        .cyber-bracket {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+
+        .cyber-bracket::after {
+        content: '🧬';
+        font-size: 10px;
+        opacity: 0.5;
+        transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .bracket-tl {
+        top: 4px;
+        left: 4px;
+        }
+
+        .bracket-tr {
+        top: 4px;
+        right: 4px;
+        }
+
+        .bracket-bl {
+        bottom: 4px;
+        left: 4px;
+        }
+
+        .bracket-br {
+        bottom: 4px;
+        right: 4px;
+        }
+
+        .dna-structural-ribbon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        pointer-events: none;
+        }
+
+        .dna-ribbon-node {
+        font-size: 7px;
+        opacity: 0.4;
+        transition: all 0.4s ease;
+        }
+
+        .apple-glass-card:hover {
+        background: rgba(255, 255, 255, 0.4) !important;
+        border-color: rgba(255, 255, 255, 1) !important;
+        box-shadow: 0 24px 50px 0 rgba(0, 88, 188, 0.08), inset 0 1px 3px 0 rgba(255, 255, 255, 0.7) !important;
+        transform: translateY(-4px);
+        }
+
+        .apple-dark-glass-card:hover {
+        background: rgba(15, 23, 42, 0.4) !important;
+        border-color: rgba(255, 255, 255, 0.35) !important;
+        box-shadow: 0 24px 50px 0 rgba(0, 0, 0, 0.3) !important;
+        transform: translateY(-4px);
+        }
+
+        .apple-glass-card:hover .cyber-bracket::after,
+        .apple-dark-glass-card:hover .cyber-bracket::after {
+        opacity: 1;
+        transform: scale(1.3) rotate(360deg);
+        }
+
+        .hover-runtime-status {
+        transition: all 0.4s ease;
+        }
+
+        .hover-runtime-status:hover {
+        transform: scale(1.02);
+        background: rgba(255, 255, 255, 0.45) !important;
+        }
+
+        .hover-runtime-status:hover .material-symbols-outlined {
+        transform: rotate(180deg);
+        }
+
+        .hover-metric-block {
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .hover-metric-block:hover {
+        background: rgba(255, 255, 255, 0.45) !important;
+        border-color: var(--theme-primary) !important;
+        transform: scale(1.02);
+        }
+
+        .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+        }
+
+        .blue-highlight-company {
+        color: var(--theme-primary) !important;
+        font-weight: 700;
+        transition: color 0.4s ease;
+        }
+    </style>
+</head>
+<body ng-app="portfolioApp" ng-controller="PortfolioController" class="relative">
+
+    <div class="fixed-backdrop">
+        <div class="absolute inset-0 bg-white/5 z-10"></div>
+        <div class="absolute inset-0 cyber-mesh opacity-30 z-20"></div>
+        <canvas id="floating-canvas" class="z-20"></canvas>
+
+        <div class="dna-vertical-viewport z-30">
+            <div class="dna-strand" id="scroll-dna-strand">
+                <div class="dna-node" style="--node-y: 2%; --node-rotation: 0deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 7%; --node-rotation: 20deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 12%; --node-rotation: 40deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 17%; --node-rotation: 60deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 22%; --node-rotation: 80deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 27%; --node-rotation: 100deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 32%; --node-rotation: 120deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 37%; --node-rotation: 140deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 42%; --node-rotation: 160deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 47%; --node-rotation: 180deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 52%; --node-rotation: 200deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 57%; --node-rotation: 220deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 62%; --node-rotation: 240deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 67%; --node-rotation: 260deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 72%; --node-rotation: 280deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 77%; --node-rotation: 300deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 82%; --node-rotation: 320deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 87%; --node-rotation: 340deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 92%; --node-rotation: 360deg;"><div class="dna-bar"></div></div>
+                <div class="dna-node" style="--node-y: 98%; --node-rotation: 380deg;"><div class="dna-bar"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative z-10 w-full flex flex-col min-h-screen">
+
+        <header class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-3xl border-b border-white/30 shadow-sm">
+            <div class="flex justify-between items-center max-w-container-max mx-auto px-4 md:px-8 h-16 relative">
+                <div class="flex items-center gap-2 group cursor-pointer">
+                    <span class="text-sm">🧬</span>
+                    <span class="font-bold tracking-tight text-base md:text-lg" style="color: var(--theme-text-main);">RAJAT SONI</span>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-2 bg-black/10 border border-white/20 rounded-lg px-4 py-1.5 max-w-md overflow-hidden font-mono text-[11px] text-slate-800 shadow-inner">
+                    <span class="text-primary animate-pulse font-bold">● STATUS:</span>
+                    <span id="system-live-log" class="truncate transition-all duration-300">Ready for network sequence interaction...</span>
+                </div>
+
+                <div class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a ng-repeat="link in navLinks"
+                       class="text-sm font-medium transition-all duration-300 relative py-1"
+                       ng-style="{color: link.active ? 'var(--theme-primary)' : 'var(--theme-text-sub)'}"
+                       ng-href="{{link.url}}"
+                       ng-click="setActiveLink(link)">
+                        {{link.title}}
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="Dashboard"
+                       target="_blank"
+                       class="apple-glass-btn px-4 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm border border-white/40">
+                        <span class="material-symbols-outlined text-sm">space_dashboard</span>
+                        Launch Console
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-container-max w-full mx-auto px-4 md:px-8 pt-24 pb-16 space-y-12 md:space-y-16">
+
+            <section class="reveal relative flex items-center overflow-hidden active" id="hero">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full apple-glass-card p-6 sm:p-8 md:p-14 rounded-3xl">
+                    <div class="system-status absolute bottom-3 right-4 md:bottom-4 md:right-6 text-[10px]" style="color: var(--theme-primary);">🧬 [SYSTEM_INTEACTIVE_VECTOR]</div>
+
+                    <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                    <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+
+                    <div class="dna-structural-ribbon">
+                        <span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span>
+                    </div>
+
+                    <div class="lg:col-span-7 z-10 space-y-6 relative pl-5">
+                        <div class="space-y-3 md:space-y-4">
+                            <span class="font-mono text-[10px] tracking-[0.25em] uppercase font-bold flex items-center gap-2" style="color: var(--theme-primary)">
+                                <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--theme-primary)"></span>
+                                // CONFIGURABLE NUCLEIC ECOSYSTEM ENGINE
+                            </span>
+                            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.1]" style="color: var(--theme-text-main)">
+                                RAJAT <span style="color: var(--theme-primary)">SONI</span>
+                            </h1>
+                            <p class="text-base md:text-lg font-normal leading-relaxed" style="color: var(--theme-text-sub)">
+                                Software Engineer specializing in the <span class="font-semibold border-b border-white/40">C# .NET Ecosystem</span>. Designing enterprise regulatory frameworks, secure land administration systems, and responsive cross-platform architectures.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 relative flex flex-col gap-4 justify-center items-center h-full z-10">
+                        <div class="apple-glass-card hover-runtime-status p-4 md:p-5 rounded-2xl w-full">
+                            <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                            <div class="flex items-center gap-3 relative z-10 border-b border-white/40 pb-2 mb-2">
+                                <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/50 flex items-center justify-center shadow-sm" style="color: var(--theme-primary)">
+                                    <span class="material-symbols-outlined font-bold text-base">memory</span>
+                                </div>
+                                <div>
+                                    <p class="font-mono text-[9px] uppercase tracking-wider" style="color: var(--theme-primary)">[BACKEND_CORE]</p>
+                                    <p class="text-xs font-bold font-mono" style="color: var(--theme-text-main)">ASP.NET Core • SQL Server</p>
+                                </div>
+                            </div>
+                            <p class="text-xs leading-relaxed" style="color: var(--theme-text-sub)">Structuring isolated architectural domains backed by robust schema optimizations and custom pipelines.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reveal apple-glass-card p-6 md:p-8 rounded-3xl" id="control-panel">
+                <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+
+                <div class="space-y-6 relative z-10">
+                    <div>
+                        <div class="text-xs font-mono font-bold tracking-wider mb-3" style="color: var(--theme-primary);">[01] HIGH-DETAIL INTERACTIVE CAPABILITY TILES:</div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <button ng-click="selectCapability('all')" class="text-left p-4 rounded-2xl border backdrop-blur-xl transition-all duration-300 flex flex-col justify-between group"
+                                    ng-style="activeCapability === 'all' ? {'background': 'rgba(255,255,255,0.5)', 'border-color': 'var(--theme-primary)', 'box-shadow': '0 8px 24px rgba(0,0,0,0.04)'} : {'background': 'rgba(255,255,255,0.15)', 'border-color': 'rgba(255,255,255,0.4)'}">
+                                <div class="w-full flex justify-between items-start mb-2">
+                                    <span class="material-symbols-outlined text-lg" style="color: var(--theme-primary);">hub</span>
+                                    <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-black/5 uppercase tracking-tight">// GLOBAL</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs font-mono mb-1" style="color: var(--theme-text-main);">Full Horizon Stack</h4>
+                                    <p class="text-[11px] leading-snug opacity-75" style="color: var(--theme-text-sub);">All segments synchronized.</p>
+                                </div>
+                                <div class="w-full border-t border-black/5 mt-3 pt-2 text-[10px] font-mono flex justify-between items-center opacity-60">
+                                    <span>[ACTIVE_THREADS]</span>
+                                    <span class="font-bold text-emerald-600">● ONLINE</span>
+                                </div>
+                            </button>
+
+                            <button ng-click="selectCapability('backend')" class="text-left p-4 rounded-2xl border backdrop-blur-xl transition-all duration-300 flex flex-col justify-between group"
+                                    ng-style="activeCapability === 'backend' ? {'background': 'rgba(255,255,255,0.5)', 'border-color': 'var(--theme-primary)', 'box-shadow': '0 8px 24px rgba(0,0,0,0.04)'} : {'background': 'rgba(255,255,255,0.15)', 'border-color': 'rgba(255,255,255,0.4)'}">
+                                <div class="w-full flex justify-between items-start mb-2">
+                                    <span class="material-symbols-outlined text-lg" style="color: var(--theme-primary);">database</span>
+                                    <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-black/5 uppercase tracking-tight">t &lt; 2.4ms</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs font-mono mb-1" style="color: var(--theme-text-main);">C# .NET / SQL Core</h4>
+                                    <p class="text-[11px] leading-snug opacity-75" style="color: var(--theme-text-sub);">EF Core tracking, storage logic optimization maps.</p>
+                                </div>
+                                <div class="w-full border-t border-black/5 mt-3 pt-2 text-[10px] font-mono flex justify-between items-center opacity-60">
+                                    <span>[ISOLATION_LEVEL]</span>
+                                    <span class="font-bold">RC_SNAPSHOT</span>
+                                </div>
+                            </button>
+
+                            <button ng-click="selectCapability('cross-platform')" class="text-left p-4 rounded-2xl border backdrop-blur-xl transition-all duration-300 flex flex-col justify-between group"
+                                    ng-style="activeCapability === 'cross-platform' ? {'background': 'rgba(255,255,255,0.5)', 'border-color': 'var(--theme-primary)', 'box-shadow': '0 8px 24px rgba(0,0,0,0.04)'} : {'background': 'rgba(255,255,255,0.15)', 'border-color': 'rgba(255,255,255,0.4)'}">
+                                <div class="w-full flex justify-between items-start mb-2">
+                                    <span class="material-symbols-outlined text-lg" style="color: var(--theme-primary);">phone_android</span>
+                                    <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-black/5 uppercase tracking-tight">60 FPS</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs font-mono mb-1" style="color: var(--theme-text-main);">Flutter Application</h4>
+                                    <p class="text-[11px] leading-snug opacity-75" style="color: var(--theme-text-sub);">Offline-first structural caching pipelines.</p>
+                                </div>
+                                <div class="w-full border-t border-black/5 mt-3 pt-2 text-[10px] font-mono flex justify-between items-center opacity-60">
+                                    <span>[STATE_ORCH]</span>
+                                    <span class="font-bold">BLOC_ASYNC</span>
+                                </div>
+                            </button>
+
+                            <button ng-click="selectCapability('frontend')" class="text-left p-4 rounded-2xl border backdrop-blur-xl transition-all duration-300 flex flex-col justify-between group"
+                                    ng-style="activeCapability === 'frontend' ? {'background': 'rgba(255,255,255,0.5)', 'border-color': 'var(--theme-primary)', 'box-shadow': '0 8px 24px rgba(0,0,0,0.04)'} : {'background': 'rgba(255,255,255,0.15)', 'border-color': 'rgba(255,255,255,0.4)'}">
+                                <div class="w-full flex justify-between items-start mb-2">
+                                    <span class="material-symbols-outlined text-lg" style="color: var(--theme-primary);">code</span>
+                                    <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-black/5 uppercase tracking-tight">Tailwind</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs font-mono mb-1" style="color: var(--theme-text-main);">Frontend Integration</h4>
+                                    <p class="text-[11px] leading-snug opacity-75" style="color: var(--theme-text-sub);">JavaScript script modules, asynchronous requests.</p>
+                                </div>
+                                <div class="w-full border-t border-black/5 mt-3 pt-2 text-[10px] font-mono flex justify-between items-center opacity-60">
+                                    <span>[STYLE_ENG]</span>
+                                    <span class="font-bold">DOM_UTILITY</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 border border-white/40 p-4 rounded-2xl transition-all duration-300">
+                        <div class="text-[9px] font-mono uppercase tracking-widest opacity-60 mb-1">// DYNAMIC SEQUENCE EXPLANATORY READOUT:</div>
+                        <h3 class="text-sm font-bold font-mono mb-1" style="color: var(--theme-text-main);">{{capabilityDetails[activeCapability].title}}</h3>
+                        <p class="text-xs leading-relaxed" style="color: var(--theme-text-sub);">{{capabilityDetails[activeCapability].desc}}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8" id="about">
+                <div class="reveal md:col-span-2 apple-glass-card p-6 sm:p-8 md:p-12 rounded-3xl relative flex flex-col justify-between group">
+                    <div class="system-status absolute top-4 right-4 md:top-6 md:right-6 text-[10px]">🧬 [MOLECULAR_STRUCTURE]</div>
+                    <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                    <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+                    <div class="dna-structural-ribbon">
+                        <span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span>
+                    </div>
+
+                    <div class="space-y-4 md:space-y-6 relative z-10 pl-5">
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <span class="p-2 bg-white/20 border border-white/50 rounded-xl material-symbols-outlined text-lg shadow-sm" style="color: var(--theme-primary)">person</span>
+                            <h2 class="text-xl md:text-2xl font-bold" style="color: var(--theme-text-main)">Engineering Philosophy</h2>
+                        </div>
+                        <p class="text-sm md:text-base leading-relaxed" style="color: var(--theme-text-sub)">
+                            Holding a <strong>B.Tech in Computer Science</strong> from <span class="font-medium" style="color: var(--theme-text-main)">Arya College of Engineering & IT</span>, my development protocols isolate transactional logic from dependencies cleanly. I construct secure database schemas while binding custom client-facing web components systematically inside JavaScript, jQuery, Bootstrap, and Tailwind CSS modules.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 grid grid-cols-2 gap-4 relative z-10 pl-5">
+                        <div ng-repeat="metric in metrics" class="hover-metric-block bg-white/10 border border-white/30 p-4 md:p-5 rounded-2xl cursor-default shadow-sm">
+                            <p class="font-black text-2xl md:text-3xl font-mono transition-colors duration-300" style="color: var(--theme-primary)">{{metric.value}}</p>
+                            <p class="text-[9px] uppercase font-bold tracking-wider mt-0.5" style="color: var(--theme-text-sub)">{{metric.label}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal md:col-span-1 apple-dark-glass-card p-6 sm:p-8 rounded-3xl relative flex flex-col justify-between text-white shadow-lg">
+                    <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                    <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+                    <div class="space-y-4">
+                        <div class="text-xs font-mono text-cyan-300 tracking-widest">// DECOUPLING PRINCIPLE</div>
+                        <h3 class="text-lg font-bold tracking-tight">🧬 Institutional Compliance Design</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Authoring clean administration layers where interfaces explicitly mirror authority constraints, secure workflow audits, and precise statutory verification rules over standard generic layout models.
+                        </p>
+                    </div>
+                    <div class="border-t border-white/10 pt-4 mt-6 space-y-2">
+                        <div class="flex justify-between text-[10px] font-mono"><span class="text-slate-400">REST API Architecture</span><span class="text-cyan-400">100%</span></div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden"><div class="bg-cyan-400 h-full w-[100%]"></div></div>
+                        <div class="flex justify-between text-[10px] font-mono"><span class="text-slate-400">Query Normalization</span><span class="text-blue-400">95%</span></div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden"><div class="bg-blue-400 h-full w-[95%]"></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reveal space-y-4" id="projects">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="p-2 bg-white/20 border border-white/50 rounded-xl material-symbols-outlined text-lg shadow-sm" style="color: var(--theme-primary)">account_tree</span>
+                        <h2 class="text-2xl font-bold" style="color: var(--theme-text-main)">Production Deployments</h2>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 text-[10px] font-mono">
+                        <button ng-click="selectProjectFilter('all')" class="apple-glass-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5" ng-style="activeProjectFilter === 'all' ? {'background':'rgba(255,255,255,0.6)','border-color':'var(--theme-primary)'} : {}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> [ALL_DEPLOYMENTS]
+                        </button>
+                        <button ng-click="selectProjectFilter('government')" class="apple-glass-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5" ng-style="activeProjectFilter === 'government' ? {'background':'rgba(255,255,255,0.6)','border-color':'var(--theme-primary)'} : {}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> [GOVT_PORTALS]
+                        </button>
+                        <button ng-click="selectProjectFilter('mobile')" class="apple-glass-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5" ng-style="activeProjectFilter === 'mobile' ? {'background':'rgba(255,255,255,0.6)','border-color':'var(--theme-primary)'} : {}">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> [MOBILE_ENGINES]
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div ng-show="shouldShowProject('government', 'backend')" class="apple-glass-card p-6 md:p-8 rounded-3xl flex flex-col justify-between animate-fadeIn">
+                        <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                        <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+                        <div class="dna-structural-ribbon"><span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span></div>
+
+                        <div class="space-y-4 pl-5">
+                            <div class="flex justify-between items-start">
+                                <span class="font-mono text-[9px] bg-white/30 border border-white/50 px-2 py-0.5 rounded-md uppercase font-bold tracking-wider" style="color: var(--theme-primary)">🧬 CHROMOSOME_SYNCED</span>
+                                <span class="text-xs font-mono text-slate-500">Feb 2026 - Present</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900" style="color: var(--theme-text-main)">RALAMS Enterprise Portal</h3>
+                            <div class="text-xs font-semibold uppercase tracking-wider">Developed for: <span class="blue-highlight-company">Rajasthan Revenue Department</span></div>
+                            <p class="text-xs md:text-sm leading-relaxed" style="color: var(--theme-text-sub)">
+                                land record management and state revenue automation modules. Structuring decoupled relational queries, schema configurations, and thread-isolated execution pathways.
+                            </p>
+                            <div class="bg-white/15 border border-white/40 p-3.5 rounded-2xl shadow-sm">
+                                <div class="text-[9px] font-mono font-bold uppercase text-slate-400 mb-1">// SEMANTIC COMPONENT MODEL</div>
+                                <p class="text-xs text-slate-600 italic">
+                                    Enforced rigorous systemic presence requirements within vital workflow nodes—optimizing regulatory components like the "Chance of Hearing" operational process flows.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 pt-6 border-t border-white/30 mt-6 font-mono text-[9px] pl-5">
+                            <span class="bg-white/20 text-slate-700 px-2.5 py-1 rounded-md border border-white/50 shadow-sm">ASP.NET Core MVC</span>
+                            <span class="bg-white/20 text-slate-700 px-2.5 py-1 rounded-md border border-white/50 shadow-sm">C#</span>
+                            <span class="bg-white/20 text-slate-700 px-2.5 py-1 rounded-md border border-white/50 shadow-sm">SQL Server</span>
+                        </div>
+                    </div>
+
+                    <div ng-show="shouldShowProject('mobile', 'cross-platform')" class="apple-glass-card p-6 md:p-8 rounded-3xl flex flex-col justify-between animate-fadeIn">
+                        <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                        <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+                        <div class="dna-structural-ribbon"><span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span></div>
+
+                        <div class="space-y-4 pl-5">
+                            <div class="flex justify-between items-start">
+                                <span class="font-mono text-[9px] bg-white/30 border border-white/50 px-2 py-0.5 rounded-md uppercase font-bold tracking-wider" style="color: var(--theme-primary)">🧬 REPLICATION_OK</span>
+                                <span class="text-xs font-mono text-slate-500">Mar 2024 - Present</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900" style="color: var(--theme-text-main)">XGN 2.0 Framework Revamp</h3>
+                            <div class="text-xs font-semibold uppercase tracking-wider">Developed for: <span class="blue-highlight-company">Gujarat Pollution Control Board (GPCB)</span></div>
+                            <p class="text-xs md:text-sm leading-relaxed" style="color: var(--theme-text-sub)">
+                                Modernizing framework structures for state-wide waste management tracing metrics. Building optimized asynchronous processing logic, data-bound grid aggregations, and mobile endpoints.
+                            </p>
+                            <div class="bg-white/15 border border-white/40 p-3.5 rounded-2xl shadow-sm">
+                                <div class="text-[9px] font-mono font-bold uppercase text-slate-400 mb-1">// ASSET TRACING MODULES</div>
+                                <p class="text-xs text-slate-600 italic">
+                                    Engineered live-tracking script routines mapping transit operations safely across Gujarat regional borders to log enforcement metadata continuously.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 pt-6 border-t border-white/30 mt-6 font-mono text-[9px] pl-5">
+                            <span class="bg-white/20 text-slate-700 px-2.5 py-1 rounded-md border border-white/50 shadow-sm">ASP.NET Core API</span>
+                            <span class="bg-white/20 text-slate-700 px-2.5 py-1 rounded-md border border-white/50 shadow-sm">Flutter</span>
+                            <span class="bg-white/20 text-slate-700 px-2.5 py-1 rounded-md border border-white/50 shadow-sm">SQL Server</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reveal apple-glass-card p-6 sm:p-8 md:p-12 rounded-3xl" id="skills">
+                <div class="system-status absolute bottom-3 left-4 md:bottom-4 md:left-6 text-[10px]" style="color: var(--theme-primary)">🧬 [TRANSCRIPTION_MATRIX]</div>
+                <div class="cyber-bracket bracket-tl"></div><div class="cyber-bracket bracket-tr"></div>
+                <div class="cyber-bracket bracket-bl"></div><div class="cyber-bracket bracket-br"></div>
+                <div class="dna-structural-ribbon">
+                    <span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span><span class="dna-ribbon-node">🧬</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 relative z-10 pl-5">
+                    <div class="flex items-center gap-3">
+                        <span class="p-2 bg-white/20 border border-white/50 rounded-xl material-symbols-outlined text-lg shadow-sm" style="color: var(--theme-primary)">bolt</span>
+                        <h2 class="text-xl md:text-2xl font-bold" style="color: var(--theme-text-main)">Key Expertise</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 relative z-10 pl-5">
+                    <div ng-repeat="skill in keySkills" ng-show="activeCapability === 'all' || skill.category === activeCapability" class="hover-skill-item p-5 md:p-6 bg-white/15 border border-white/40 rounded-2xl transition-all duration-300 cursor-default shadow-sm animate-fadeIn">
+                        <span class="material-symbols-outlined text-primary text-2xl mb-3 block" style="color: var(--theme-primary)">{{skill.icon}}</span>
+                        <h4 class="font-bold text-sm md:text-base font-mono mb-1" style="color: var(--theme-text-main)">🧬 {{skill.title}}</h4>
+                        <p class="text-xs leading-relaxed" style="color: var(--theme-text-sub)">{{skill.description}}</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-white/10 backdrop-blur-3xl border-t border-white/30 py-6 md:py-8 px-4 md:px-8 mt-auto">
+            <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4 relative">
+                <div class="system-status text-[9px] opacity-40 md:absolute md:-top-10 md:left-1/2 md:-translate-x-1/2">[NODE_TERMINATED_GRACEFULLY] • 🧬</div>
+                <div class="font-bold text-xs font-mono tracking-wider cursor-default" style="color: var(--theme-primary)">{{profileData.name | uppercase}}</div>
+                <div class="font-mono text-[11px] text-center" style="color: var(--theme-text-sub)">
+                    © 2026 {{profileData.name}}. Engineered with precision.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        var app = angular.module('portfolioApp', []);
+
+        app.controller('PortfolioController', ['$scope', '$window', function($scope, $window) {
+
+        $scope.profileData = {
+        name: "Rajat Soni",
+        systemNode: "SYS_RICH_DASHBOARD"
+        };
+
+        // Detailed Capability Metadata Schema Models
+        $scope.activeCapability = 'all';
+        $scope.capabilityDetails = {
+        'all': { title: "Complete System Topology Horizon", desc: "Displaying full structural architecture proficiency boundaries mapping optimized backends directly onto synchronized frontend display spaces." },
+        'backend': { title: "High-Throughput C# Server Internals", desc: "Engineered cleanly using Entity Framework Core tracking management, relational table partitioning maps, structured Domain Context structures, and highly optimized database files processing queries in less than 2.4ms under execution profiles." },
+        'cross-platform': { title: "Native Cross-Tier Client Deliveries", desc: "Compiling modular Flutter device systems bound tightly to local databases using background workers, offline synchronization pools, and BLOC state orchestration paradigms rendering smoothly at 60 FPS." },
+        'frontend': { title: "Responsive Control Environments", desc: "Structuring predictable user interface controls backed by script asset files, asynchronous jQuery payload mappings, and utility-first layout wrappers like Tailwind CSS and Bootstrap." }
+        };
+
+        $scope.selectCapability = function(cap) {
+        $scope.activeCapability = cap;
+        pushSystemLog("[SYS_FILTER] Refocused dashboard control parameters to capability tier: " + cap);
+        };
+
+        // Dynamic Projects Presentation Filters
+        $scope.activeProjectFilter = 'all';
+        $scope.selectProjectFilter = function(filter) {
+        $scope.activeProjectFilter = filter;
+        pushSystemLog("[SYS_WORK] Altered deployment query boundaries to category: " + filter);
+        };
+
+        $scope.shouldShowProject = function(projTag, capTag) {
+        var matchesProj = ($scope.activeProjectFilter === 'all' || $scope.activeProjectFilter === projTag);
+        var matchesCap = ($scope.activeCapability === 'all' || $scope.activeCapability === capTag);
+        return matchesProj && matchesCap;
+        };
+
+        // Dynamic Terminal Logging Helper
+        function pushSystemLog(text) {
+        var logEl = document.getElementById('system-live-log');
+        if(logEl) { logEl.innerText = " " + text; }
+        }
+
+        $scope.changeTheme = function(themeName) {
+        var body = document.body;
+        body.className = "relative";
+        if(themeName !== 'default') body.classList.add('theme-' + themeName);
+        pushSystemLog("[SYS_THEME] Initialized macro " + themeName + " style context tokens.");
+        };
+
+        $scope.navLinks = [
+        { title: "Terminal", url: "#hero", active: true },
+        { title: "Control Panel", url: "#control-panel", active: false },
+        { title: "About", url: "#about", active: false },
+        { title: "Projects", url: "#projects", active: false }
+        ];
+
+        $scope.setActiveLink = function(selectedLink) {
+        angular.forEach($scope.navLinks, function(link) {
+        link.active = (link.title === selectedLink.title);
+        });
+        pushSystemLog("[SYS_NAV] Transferred viewing plane focus to " + selectedLink.title + " content section.");
+        };
+
+        $scope.metrics = [
+        { value: "04+", label: "Years Experience" },
+        { value: "25+", label: "Production Deployments" }
+        ];
+
+        $scope.keySkills = [
+        { title: "SQL Server Optimization", icon: "database", category: "backend", description: "Advanced database normalization, query execution plan analysis, strategic index tuning, and highly performant stored procedures." },
+        { title: "Entity Framework Core", icon: "layers", category: "backend", description: "Configuring optimal query execution strategies, compiled queries, change tracking control, and handling complex migration environments." },
+        { title: "Clean Architecture & DDD", icon: "token", category: "backend", description: "Isolating core business entities using bounded contexts, clear application domain separation, and highly testable unit boundaries." },
+        { title: "Cross-Platform Delivery", icon: "phone_android", category: "cross-platform", description: "Building highly responsive Flutter applications backed by robust offline caching patterns and state orchestration models." },
+        { title: "Enterprise Integrations", icon: "api", category: "backend", description: "Authoring highly secure custom JSON middleware layers, standardized API responses, and resilient third-party messaging integrations." },
+        { title: "Frontend Orchestration", icon: "code", category: "frontend", description: "Structuring asynchronous script layers using JavaScript, jQuery, and utility-first styling patterns like Tailwind CSS and Bootstrap." }
+        ];
+
+        // Scroll Helix Chain Engine
+        var dnaStrandElement = document.getElementById('scroll-dna-strand');
+        var idleBaseRotation = 0;
+        var currentScrollRotation = 0;
+
+        function updateHybridDNALoop() {
+        idleBaseRotation += 0.2;
+        var winScrollTop = $window.pageYOffset || document.documentElement.scrollTop;
+        var targetScrollRotation = winScrollTop * 0.15;
+        currentScrollRotation += (targetScrollRotation - currentScrollRotation) * 0.08;
+
+        if (dnaStrandElement) {
+        var totalRotation = idleBaseRotation + currentScrollRotation;
+        dnaStrandElement.style.transform = 'rotateY(' + totalRotation + 'deg)';
+        }
+        $window.requestAnimationFrame(updateHybridDNALoop);
+        }
+        $window.requestAnimationFrame(updateHybridDNALoop);
+
+        // ====================================================================
+        // GAMIFIED INTERACTIVE COLLISION ENGINE WITH CLICK TARGETS
+        // ====================================================================
+        (function initKineticEngine() {
+        var canvas = document.getElementById('floating-canvas');
+        if(!canvas) return;
+        var ctx = canvas.getContext('2d');
+
+        var techAndBioNodes = ['⚡ C#', '.NET Core', '🛢️ SQL Server', '☁️ Azure', '💻 VS', '📱 Flutter', '🌐 REST API', '🧬 A', '🧬 T', '🧬 C', '🧬 G'];
+        var particles = [];
+        var sparks = [];
+        var ripples = [];
+        var mouse = { x: null, y: null };
+
+        function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        canvas.addEventListener('mousemove', function(e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        });
+        canvas.addEventListener('mouseleave', function() {
+        mouse.x = null;
+        mouse.y = null;
+        });
+
+        canvas.addEventListener('click', function(e) {
+        var clickX = e.clientX;
+        var clickY = e.clientY;
+        var hitDetected = false;
+
+        ripples.push({ x: clickX, y: clickY, r: 2, maxR: 45, alpha: 1.0 });
+
+        for(var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        var hitWidth = p.text.length * 7;
+        if(clickX >= p.x - 10 && clickX <= p.x + hitWidth && clickY >= p.y - 15 && clickY <= p.y + 5) {
+        hitDetected = true;
+        createSparkCluster(p.x + (hitWidth/2), p.y, 25);
+        pushSystemLog("[SYS_KINETIC] User neutralized vector node spatial point: " + p.text);
+
+        p.x = Math.random() * canvas.width;
+        p.y = Math.random() * canvas.height;
+        }
+        }
+        });
+
+        resizeCanvas();
+
+        for (var i = 0; i < 22; i++) {
+        particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        text: techAndBioNodes[i % techAndBioNodes.length],
+        speedX: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 1.0 + 1.2),
+        speedY: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 1.0 + 1.2),
+        opacity: Math.random() * 0.35 + 0.25
+        });
+        }
+
+        function createSparkCluster(x, y, count) {
+        var amt = count || 10;
+        for(var k = 0; k < amt; k++) {
+        sparks.push({ x: x, y: y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 7, alpha: 1.0, size: Math.random() * 2.5 + 1 });
+        }
+        }
+
+        function drawFrame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var activeThemeColor = getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim();
+
+        for (var a = 0; a < particles.length; a++) {
+        for (var b = a + 1; b < particles.length; b++) {
+        var dist = Math.hypot(particles[a].x - particles[b].x, particles[a].y - particles[b].y);
+        if (dist < 130) {
+        ctx.strokeStyle = activeThemeColor;
+        ctx.globalAlpha = (1.0 - (dist / 130)) * 0.15;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(particles[a].x, particles[a].y);
+        ctx.lineTo(particles[b].x, particles[b].y);
+        ctx.stroke();
+        }
+        }
+        }
+        ctx.globalAlpha = 1.0;
+
+        for (var r = ripples.length - 1; r >= 0; r--) {
+        var rip = ripples[r];
+        rip.r += 2.5;
+        rip.alpha -= 0.04;
+        if(rip.alpha <= 0) { ripples.splice(r, 1); continue; }
+        ctx.strokeStyle = activeThemeColor;
+        ctx.globalAlpha = rip.alpha;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+        ctx.stroke();
+        }
+        ctx.globalAlpha = 1.0;
+
+        ctx.font = "bold 12px 'JetBrains Mono', monospace";
+        particles.forEach(function(p) {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if(mouse.x !== null && mouse.y !== null) {
+        var mDist = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+        if(mDist < 110) {
+        var forceX = (p.x - mouse.x) / mDist;
+        var forceY = (p.y - mouse.y) / mDist;
+        p.x += forceX * 4.5;
+        p.y += forceY * 4.5;
+        }
+        }
+
+        if (p.x < 10) { p.speedX *= -1; p.x = 10; createSparkCluster(p.x, p.y, 8); }
+        if (p.x > canvas.width - 60) { p.speedX *= -1; p.x = canvas.width - 60; createSparkCluster(p.x, p.y, 8); }
+        if (p.y < 15) { p.speedY *= -1; p.y = 15; createSparkCluster(p.x, p.y, 8); }
+        if (p.y > canvas.height - 15) { p.speedY *= -1; p.y = canvas.height - 15; createSparkCluster(p.x, p.y, 8); }
+
+        ctx.fillStyle = activeThemeColor;
+        ctx.globalAlpha = p.opacity;
+        ctx.fillText(p.text, p.x, p.y);
+        });
+
+        for (var s = sparks.length - 1; s >= 0; s--) {
+        var sp = sparks[s];
+        sp.x += sp.vx;
+        sp.y += sp.vy;
+        sp.alpha -= 0.03;
+        if (sp.alpha <= 0) { sparks.splice(s, 1); continue; }
+        ctx.fillStyle = activeThemeColor;
+        ctx.globalAlpha = sp.alpha;
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+        ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(drawFrame);
+        }
+        requestAnimationFrame(drawFrame);
+        })();
+
+        var revealElements = document.querySelectorAll('.reveal');
+        var revealObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.05 });
+        revealElements.forEach(function(el) { revealObserver.observe(el); });
+        }]);
+    </script>
+</body>
+</html>
