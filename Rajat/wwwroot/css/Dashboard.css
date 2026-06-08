@@ -1,0 +1,189 @@
+/* --- DYNAMIC TRANS-SYSTEM THEME TOKENS --- */
+:root {
+  --theme-primary: #0058bc;
+  --theme-secondary: #0f172a;
+  --theme-text-main: #0f172a;
+  --theme-text-sub: #475569;
+  --theme-dna-a: #0058bc;
+  --theme-dna-b: #00bfdb;
+  --bg-gradient: linear-gradient(135deg, #c7d2fe 0%, #fbcfe8 35%, #fce7f3 65%, #dcfce7 100%);
+}
+
+body.theme-emerald {
+  --theme-primary: #059669;
+  --theme-secondary: #064e3b;
+  --theme-text-main: #064e3b;
+  --theme-text-sub: #374151;
+  --theme-dna-a: #059669;
+  --theme-dna-b: #10b981;
+  --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 35%, #86efac 70%, #dcfce7 100%);
+}
+
+body.theme-dark {
+  --theme-primary: #38bdf8;
+  --theme-secondary: #f8fafc;
+  --theme-text-main: #f8fafc;
+  --theme-text-sub: #cbd5e1;
+  --theme-dna-a: #38bdf8;
+  --theme-dna-b: #818cf8;
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #2e1065 70%, #020617 100%);
+}
+
+body.theme-sunset {
+  --theme-primary: #ea580c;
+  --theme-secondary: #451a03;
+  --theme-text-main: #451a03;
+  --theme-text-sub: #4b5563;
+  --theme-dna-a: #ea580c;
+  --theme-dna-b: #f59e0b;
+  --bg-gradient: linear-gradient(135deg, #fff7ed 0%, #ffedd5 35%, #fed7aa 65%, #fef3c7 100%);
+}
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  transition: background 0.8s ease;
+}
+
+body {
+  background: var(--bg-gradient) !important;
+  background-attachment: fixed !important;
+}
+
+.fixed-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cyber-mesh {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+#floating-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+.glass-desktop-workspace {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(40px) saturate(230%);
+  -webkit-backdrop-filter: blur(40px) saturate(230%);
+  box-shadow: inset 0 1px 3px 0 rgba(255, 255, 255, 0.6);
+}
+
+body.theme-dark .glass-desktop-workspace {
+  background: rgba(15, 23, 42, 0.45) !important;
+  box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(25px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.03), inset 0 1px 1px 0 rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+body.theme-dark .glass-card {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.theme-dark .glass-card:hover {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.active-blue-link {
+  background: var(--theme-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+}
+
+.apple-glass-btn {
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.3s ease;
+}
+
+body.theme-dark .apple-glass-btn {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.apple-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.animated-svg-path {
+  transition: d 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-bar {
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-progress {
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+}
+
+body.theme-dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Floating AQI Widget Styling */
+.aqi-float-widget {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+body.theme-dark .aqi-float-widget {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
